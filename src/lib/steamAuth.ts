@@ -3,7 +3,6 @@
 import { SteamUser } from '@/types';
 
 const STEAM_OPENID_URL = 'https://steamcommunity.com/openid/login';
-const STEAM_API_KEY = process.env.NEXT_PUBLIC_STEAM_API_KEY || 'your-steam-api-key';
 const RETURN_URL = process.env.NEXT_PUBLIC_RETURN_URL || 'https://hitmanki.store/auth/callback';
 const REALM = process.env.NEXT_PUBLIC_REALM || 'https://hitmanki.store';
 
@@ -57,23 +56,20 @@ export async function handleSteamCallback(): Promise<SteamUser | null> {
   console.log('Extracted Steam ID:', steamId);
 
   try {
-    // Получаем профиль пользователя из Steam API
-    const response = await fetch(
-      `https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=${STEAM_API_KEY}&steamids=${steamId}`
-    );
+    // Получаем профиль пользователя через наш API route
+    const response = await fetch(`/api/steam/profile?steamid=${steamId}`);
 
     if (!response.ok) {
       throw new Error('Failed to fetch Steam profile');
     }
 
     const data = await response.json();
-    const players = data.response?.players;
-
-    if (!players || players.length === 0) {
-      throw new Error('Steam profile not found');
+    
+    if (!data.success) {
+      throw new Error(data.error || 'Failed to fetch Steam profile');
     }
 
-    const user = players[0];
+    const user = data.data;
     
     // Сохраняем пользователя в localStorage
     localStorage.setItem('steamUser', JSON.stringify(user));

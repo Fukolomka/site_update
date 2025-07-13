@@ -23,7 +23,6 @@ DATABASE_URL="mysql://username:password@host:port/database"
 ADMIN_STEAM_IDS=76561199446613665
 
 # Клиентские переменные (доступны в браузере)
-NEXT_PUBLIC_STEAM_API_KEY=your-steam-api-key-here
 NEXT_PUBLIC_RETURN_URL=https://hitmanki.store/auth/callback
 NEXT_PUBLIC_REALM=https://hitmanki.store
 ```
