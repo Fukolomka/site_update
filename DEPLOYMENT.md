@@ -21,13 +21,19 @@ DATABASE_URL="mysql://username:password@host:port/database"
 
 # Админы (Steam ID через запятую)
 ADMIN_STEAM_IDS=76561199446613665
+
+# Клиентские переменные (доступны в браузере)
+NEXT_PUBLIC_STEAM_API_KEY=your-steam-api-key-here
+NEXT_PUBLIC_RETURN_URL=https://hitmanki.store/auth/callback
+NEXT_PUBLIC_REALM=https://hitmanki.store
 ```
 
 ## 2. Настройка Steam OpenID
 
 1. Зайдите в Steam Developer Console
 2. Добавьте домен `https://hitmanki.store` в разрешенные домены
-3. Укажите return URL: `https://hitmanki.store/api/auth/steam/return`
+3. Укажите return URL: `https://hitmanki.store/auth/callback` (для новой авторизации)
+4. Или оставьте старый: `https://hitmanki.store/api/auth/steam/return` (для Next.js API)
 
 ## 3. Сборка и запуск
 

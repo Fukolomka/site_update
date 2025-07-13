@@ -8,12 +8,13 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Case, Item, CaseOpeningResult } from '@/types';
 import { formatCurrency } from '@/lib/utils';
+import { getCurrentUser, initiateSteamAuth, logout, SteamUser } from '@/lib/steamAuth';
 
 export default function CaseOpeningPage() {
   const params = useParams();
   const router = useRouter();
   const [caseData, setCaseData] = useState<Case | null>(null);
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<SteamUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [opening, setOpening] = useState(false);
   const [result, setResult] = useState<CaseOpeningResult | null>(null);
@@ -22,7 +23,9 @@ export default function CaseOpeningPage() {
 
   useEffect(() => {
     fetchCaseData();
-    fetchUser();
+    // Получаем пользователя из localStorage
+    const currentUser = getCurrentUser();
+    setUser(currentUser);
   }, []);
 
   const fetchCaseData = async () => {
@@ -39,17 +42,7 @@ export default function CaseOpeningPage() {
     }
   };
 
-  const fetchUser = async () => {
-    try {
-      const response = await fetch('/api/user');
-      const data = await response.json();
-      if (data.success) {
-        setUser(data.data);
-      }
-    } catch (error) {
-      console.error('Error fetching user:', error);
-    }
-  };
+
 
   const handleOpenCase = async () => {
     if (!user) {
@@ -59,10 +52,11 @@ export default function CaseOpeningPage() {
 
     if (!caseData) return;
 
-    if (user.balance < caseData.price) {
-      alert('Insufficient balance');
-      return;
-    }
+    // Убираем проверку баланса, так как у SteamUser нет balance
+    // if (user.balance < caseData.price) {
+    //   alert('Insufficient balance');
+    //   return;
+    // }
 
     setOpening(true);
     setShowResult(false);
@@ -97,17 +91,11 @@ export default function CaseOpeningPage() {
   };
 
   const handleLogin = () => {
-    window.location.href = '/api/auth/steam';
+    initiateSteamAuth();
   };
 
-  const handleLogout = async () => {
-    try {
-      await fetch('/api/auth/logout', { method: 'POST' });
-      setUser(null);
-      router.push('/');
-    } catch (error) {
-      console.error('Error logging out:', error);
-    }
+  const handleLogout = () => {
+    logout();
   };
 
   if (loading) {
@@ -165,11 +153,11 @@ export default function CaseOpeningPage() {
               {user ? (
                 <div className="space-y-4">
                   <p className="text-sm text-gray-600">
-                    Your Balance: {formatCurrency(user.balance)}
+                    Welcome, {user.personaname}!
                   </p>
                   <Button
                     onClick={handleOpenCase}
-                    disabled={opening || user.balance < caseData.price}
+                    disabled={opening}
                     className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 px-8 py-3 text-lg"
                   >
                     {opening ? 'Opening...' : 'Open Case'}

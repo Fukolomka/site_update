@@ -5,15 +5,19 @@ import { Navbar } from '@/components/Navbar';
 import { CaseCard } from '@/components/CaseCard';
 import { Button } from '@/components/ui/button';
 import { Case } from '@/types';
+import { getCurrentUser, initiateSteamAuth, logout, SteamUser } from '@/lib/steamAuth';
 
 export default function HomePage() {
   const [cases, setCases] = useState<Case[]>([]);
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<SteamUser | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchCases();
-    fetchUser();
+    // Получаем пользователя из localStorage
+    const currentUser = getCurrentUser();
+    setUser(currentUser);
+    setLoading(false);
   }, []);
 
   const fetchCases = async () => {
@@ -29,53 +33,15 @@ export default function HomePage() {
       setLoading(false);
     }
   };
-  useEffect(() => {
-    const hasToken = document.cookie.includes('token=');
-    if (hasToken) fetchUser();
-  }, []);
-  const fetchUser = async () => {
-    try {
-      console.log('Fetching user from /api/user');
-      // Проверяем наличие токена в cookie
-      const hasToken = document.cookie.includes('token=');
-      console.log('Has token in cookie:', hasToken);
-      
-      const response = await fetch('/api/user?v=' + Date.now(), {
-        credentials: 'include',
-        cache: 'no-cache',
-        headers: {
-          'Cache-Control': 'no-cache',
-          'Pragma': 'no-cache',
-        },
-      });
-      console.log('Response status:', response.status);
-      const data = await response.json();
-      console.log('Response data:', data);
 
-      if (data.success) {
-        setUser(data.data); // авторизованный пользователь
-      } else {
-        setUser(null); // гость
-      }
-    } catch (error) {
-      console.error('Ошибка при получении пользователя:', error);
-      setUser(null); // на всякий случай
-    }
-  };
 
 
   const handleLogin = () => {
-    window.location.href = '/api/auth/steam';
+    initiateSteamAuth();
   };
 
-  const handleLogout = async () => {
-    try {
-      await fetch('/api/auth/logout', { method: 'POST' });
-      setUser(null);
-      window.location.reload();
-    } catch (error) {
-      console.error('Error logging out:', error);
-    }
+  const handleLogout = () => {
+    logout();
   };
 
   const handleOpenCase = (caseId: string) => {

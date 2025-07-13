@@ -13,9 +13,10 @@ import {
   Menu,
   X
 } from 'lucide-react';
+import { SteamUser } from '@/lib/steamAuth';
 
 interface NavbarProps {
-  user?: any;
+  user?: SteamUser | null;
   onLogin?: () => void;
   onLogout?: () => void;
 }
@@ -48,11 +49,12 @@ export function Navbar({ user, onLogin, onLogout }: NavbarProps) {
                 Inventory
               </Link>
             )}
-            {user?.role === 'ADMIN' && (
+            {/* Admin link - можно добавить позже */}
+            {/* {user?.role === 'ADMIN' && (
               <Link href="/admin" className="hover:text-blue-400 transition-colors">
                 Admin
               </Link>
-            )}
+            )} */}
           </div>
 
           {/* User Section */}
@@ -60,20 +62,16 @@ export function Navbar({ user, onLogin, onLogout }: NavbarProps) {
             {user ? (
               <>
                 <div className="flex items-center space-x-2">
-                  <Wallet className="w-4 h-4" />
-                  <span className="font-semibold">${user.balance.toFixed(2)}</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  {user.avatar && (
+                  {user.avatarfull && (
                     <Image
-                      src={user.avatar}
-                      alt={user.username}
+                      src={user.avatarfull}
+                      alt={user.personaname}
                       width={32}
                       height={32}
                       className="rounded-full"
                     />
                   )}
-                  <span>{user.username}</span>
+                  <span>{user.personaname}</span>
                 </div>
                 <Button
                   onClick={onLogout}
@@ -131,23 +129,24 @@ export function Navbar({ user, onLogin, onLogout }: NavbarProps) {
                   Inventory
                 </Link>
               )}
-              {user?.role === 'ADMIN' && (
+              {/* Admin link - можно добавить позже */}
+              {/* {user?.role === 'ADMIN' && (
                 <Link
                   href="/admin"
                   className="block px-3 py-2 text-base font-medium hover:bg-gray-700 rounded-md"
                 >
                   Admin
                 </Link>
-              )}
+              )} */}
             </div>
             <div className="pt-4 pb-3 border-t border-gray-700">
               {user ? (
                 <div className="flex items-center px-5">
                   <div className="flex-shrink-0">
-                    {user.avatar && (
+                    {user.avatarfull && (
                       <Image
-                        src={user.avatar}
-                        alt={user.username}
+                        src={user.avatarfull}
+                        alt={user.personaname}
                         width={40}
                         height={40}
                         className="rounded-full"
@@ -155,8 +154,8 @@ export function Navbar({ user, onLogin, onLogout }: NavbarProps) {
                     )}
                   </div>
                   <div className="ml-3">
-                    <div className="text-base font-medium">{user.username}</div>
-                    <div className="text-sm text-gray-400">${user.balance.toFixed(2)}</div>
+                    <div className="text-base font-medium">{user.personaname}</div>
+                    <div className="text-sm text-gray-400">Steam User</div>
                   </div>
                 </div>
               ) : (
