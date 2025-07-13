@@ -14,7 +14,8 @@ import {
   Settings, 
   DollarSign,
   Activity,
-  Shield
+  Shield,
+  FileText
 } from 'lucide-react';
 
 export default function AdminPage() {
@@ -158,7 +159,7 @@ export default function AdminPage() {
         </div>
 
         {/* Admin Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => router.push('/admin/users')}>
             <CardContent className="p-6">
               <div className="text-center">
@@ -227,6 +228,18 @@ export default function AdminPage() {
                 </div>
                 <h3 className="text-lg font-semibold mb-2">Settings</h3>
                 <p className="text-gray-600 text-sm">Configure site settings</p>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+            <CardContent className="p-6">
+              <div className="text-center">
+                <div className="p-3 bg-indigo-100 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                  <FileText className="w-8 h-8 text-indigo-600" />
+                </div>
+                <h3 className="text-lg font-semibold mb-2">Reports</h3>
+                <p className="text-gray-600 text-sm">Generate detailed reports</p>
               </div>
             </CardContent>
           </Card>
