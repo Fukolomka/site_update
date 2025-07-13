@@ -36,6 +36,10 @@ export default function HomePage() {
   const fetchUser = async () => {
     try {
       console.log('Fetching user from /api/user');
+      // Проверяем наличие токена в cookie
+      const hasToken = document.cookie.includes('token=');
+      console.log('Has token in cookie:', hasToken);
+      
       const response = await fetch('/api/user?v=' + Date.now(), {
         credentials: 'include',
         cache: 'no-cache',
