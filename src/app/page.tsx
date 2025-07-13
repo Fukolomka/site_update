@@ -39,6 +39,10 @@ export default function HomePage() {
       const response = await fetch('/api/user?v=' + Date.now(), {
         credentials: 'include',
         cache: 'no-cache',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache',
+        },
       });
       console.log('Response status:', response.status);
       const data = await response.json();
