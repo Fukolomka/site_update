@@ -35,7 +35,7 @@ export default function HomePage() {
   }, []);
   const fetchUser = async () => {
     try {
-      const response = await fetch('https://hitmanki.store/api/user', {
+      const response = await fetch('/api/user', {
         credentials: 'include',
       });
       const data = await response.json();
