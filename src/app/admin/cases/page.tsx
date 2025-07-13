@@ -8,6 +8,7 @@ import { SteamUser } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import ImageUpload from '@/components/ImageUpload';
 import { 
   Package, 
   Plus, 
@@ -38,6 +39,14 @@ export default function AdminCasesPage() {
   const [cases, setCases] = useState<Case[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [createForm, setCreateForm] = useState({
+    name: '',
+    description: '',
+    image: '',
+    price: 0,
+    isActive: true
+  });
+  const [creating, setCreating] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -97,11 +106,26 @@ export default function AdminCasesPage() {
         body: JSON.stringify({ isActive: !currentStatus }),
       });
 
+      const data = await response.json();
+
       if (response.ok) {
         fetchCases(); // Обновляем список
+        
+        // Показываем уведомление
+        const notification = document.createElement('div');
+        notification.className = 'fixed top-4 right-4 bg-blue-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
+        notification.textContent = data.message || `Case ${!currentStatus ? 'activated' : 'deactivated'} successfully!`;
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+          document.body.removeChild(notification);
+        }, 3000);
+      } else {
+        alert(data.error || 'Failed to toggle case status');
       }
     } catch (error) {
       console.error('Error toggling case status:', error);
+      alert('Error toggling case status');
     }
   };
 
@@ -115,12 +139,83 @@ export default function AdminCasesPage() {
         method: 'DELETE',
       });
 
+      const data = await response.json();
+
       if (response.ok) {
         fetchCases(); // Обновляем список
+        
+        // Показываем уведомление
+        const notification = document.createElement('div');
+        notification.className = 'fixed top-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
+        notification.textContent = data.message || 'Case deleted successfully!';
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+          document.body.removeChild(notification);
+        }, 3000);
+      } else {
+        alert(data.error || 'Failed to delete case');
       }
     } catch (error) {
       console.error('Error deleting case:', error);
+      alert('Error deleting case');
     }
+  };
+
+  const handleCreateCase = async () => {
+    if (!createForm.name || !createForm.image || createForm.price <= 0) {
+      alert('Please fill in all required fields');
+      return;
+    }
+
+    setCreating(true);
+    try {
+      const response = await fetch('/api/admin/cases', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(createForm),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setShowCreateModal(false);
+        setCreateForm({
+          name: '',
+          description: '',
+          image: '',
+          price: 0,
+          isActive: true
+        });
+        fetchCases(); // Обновляем список
+        
+        // Показываем уведомление об успехе
+        const notification = document.createElement('div');
+        notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
+        notification.textContent = 'Case created successfully!';
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+          document.body.removeChild(notification);
+        }, 3000);
+      } else {
+        alert(data.error || 'Failed to create case');
+      }
+    } catch (error) {
+      console.error('Error creating case:', error);
+      alert('Error creating case');
+    } finally {
+      setCreating(false);
+    }
+  };
+
+  const handleInputChange = (field: string, value: any) => {
+    setCreateForm(prev => ({
+      ...prev,
+      [field]: value
+    }));
   };
 
   if (loading) {
@@ -262,18 +357,108 @@ export default function AdminCasesPage() {
         )}
       </div>
 
-      {/* Create Case Modal - можно добавить позже */}
+      {/* Create Case Modal */}
       {showCreateModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+          <div className="bg-white rounded-lg p-6 w-full max-w-lg">
             <h2 className="text-xl font-semibold mb-4">Create New Case</h2>
-            <p className="text-gray-600 mb-4">This feature will be implemented soon.</p>
-            <div className="flex justify-end space-x-2">
-              <Button variant="outline" onClick={() => setShowCreateModal(false)}>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Case Name *
+                </label>
+                <Input
+                  value={createForm.name}
+                  onChange={(e) => handleInputChange('name', e.target.value)}
+                  placeholder="Enter case name"
+                  className="w-full"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Description
+                </label>
+                <textarea
+                  value={createForm.description}
+                  onChange={(e) => handleInputChange('description', e.target.value)}
+                  placeholder="Enter case description"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  rows={3}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Case Image *
+                </label>
+                <ImageUpload
+                  onImageSelect={(url) => handleInputChange('image', url)}
+                  currentImage={createForm.image}
+                  placeholder="Upload case image or enter URL below"
+                />
+                <div className="mt-2">
+                  <Input
+                    value={createForm.image}
+                    onChange={(e) => handleInputChange('image', e.target.value)}
+                    placeholder="Or enter image URL manually"
+                    className="w-full"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Price *
+                </label>
+                <Input
+                  type="number"
+                  value={createForm.price}
+                  onChange={(e) => handleInputChange('price', parseFloat(e.target.value) || 0)}
+                  placeholder="Enter price"
+                  className="w-full"
+                  min="0"
+                  step="0.01"
+                />
+              </div>
+
+              <div className="flex items-center space-x-3">
+                <input
+                  type="checkbox"
+                  id="isActive"
+                  checked={createForm.isActive}
+                  onChange={(e) => handleInputChange('isActive', e.target.checked)}
+                  className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                />
+                <label htmlFor="isActive" className="text-sm font-medium text-gray-700">
+                  Active
+                </label>
+              </div>
+            </div>
+
+            <div className="flex justify-end space-x-2 mt-6">
+              <Button 
+                variant="outline" 
+                onClick={() => {
+                  setShowCreateModal(false);
+                  setCreateForm({
+                    name: '',
+                    description: '',
+                    image: '',
+                    price: 0,
+                    isActive: true
+                  });
+                }}
+                disabled={creating}
+              >
                 Cancel
               </Button>
-              <Button onClick={() => setShowCreateModal(false)}>
-                Create
+              <Button 
+                onClick={handleCreateCase}
+                disabled={creating}
+              >
+                {creating ? 'Creating...' : 'Create Case'}
               </Button>
             </div>
           </div>

@@ -35,3 +35,50 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Failed to fetch cases' }, { status: 500 });
   }
 }
+
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { name, description, image, price, isActive } = body;
+
+    // Валидация
+    if (!name || !image || !price || price <= 0) {
+      return NextResponse.json({ 
+        error: 'Name, image, and price are required. Price must be greater than 0.' 
+      }, { status: 400 });
+    }
+
+    // Проверяем, не существует ли уже кейс с таким именем
+    const existingCase = await prisma.case.findFirst({
+      where: {
+        name: name
+      }
+    });
+
+    if (existingCase) {
+      return NextResponse.json({ 
+        error: 'A case with this name already exists' 
+      }, { status: 400 });
+    }
+
+    // Создаем новый кейс
+    const newCase = await prisma.case.create({
+      data: {
+        name,
+        description: description || '',
+        image,
+        price: parseFloat(price),
+        isActive: isActive !== undefined ? isActive : true
+      }
+    });
+
+    return NextResponse.json({
+      success: true,
+      data: newCase,
+      message: 'Case created successfully'
+    });
+  } catch (error) {
+    console.error('Create case API error:', error);
+    return NextResponse.json({ error: 'Failed to create case' }, { status: 500 });
+  }
+}
