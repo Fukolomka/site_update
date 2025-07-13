@@ -8,7 +8,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Case, Item, CaseOpeningResult } from '@/types';
 import { formatCurrency } from '@/lib/utils';
-import { getCurrentUser, initiateSteamAuth, logout, SteamUser } from '@/lib/steamAuth';
+import { getCurrentUser, initiateSteamAuth, logout } from '@/lib/steamAuth';
+import { SteamUser } from '@/types';
 
 export default function CaseOpeningPage() {
   const params = useParams();

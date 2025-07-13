@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { handleSteamCallback, SteamUser } from '@/lib/steamAuth';
+import { handleSteamCallback } from '@/lib/steamAuth';
+import { SteamUser } from '@/types';
 
 export default function AuthCallbackPage() {
   const [loading, setLoading] = useState(true);

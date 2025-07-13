@@ -212,6 +212,14 @@ export interface SteamProfile {
   loccityid?: number;
 }
 
+// New Steam User type for client-side auth
+export interface SteamUser {
+  steamid: string;
+  personaname: string;
+  avatarfull: string;
+  profileurl: string;
+}
+
 // Component prop types
 export interface CaseCardProps {
   case: Case;

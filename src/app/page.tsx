@@ -5,7 +5,8 @@ import { Navbar } from '@/components/Navbar';
 import { CaseCard } from '@/components/CaseCard';
 import { Button } from '@/components/ui/button';
 import { Case } from '@/types';
-import { getCurrentUser, initiateSteamAuth, logout, SteamUser } from '@/lib/steamAuth';
+import { getCurrentUser, initiateSteamAuth, logout } from '@/lib/steamAuth';
+import { SteamUser } from '@/types';
 
 export default function HomePage() {
   const [cases, setCases] = useState<Case[]>([]);

@@ -13,7 +13,7 @@ import {
   Menu,
   X
 } from 'lucide-react';
-import { SteamUser } from '@/lib/steamAuth';
+import { SteamUser } from '@/types';
 
 interface NavbarProps {
   user?: SteamUser | null;

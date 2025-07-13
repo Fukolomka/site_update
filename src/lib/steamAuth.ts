@@ -1,16 +1,11 @@
 // Прямая авторизация через Steam OpenID без Next.js
 
+import { SteamUser } from '@/types';
+
 const STEAM_OPENID_URL = 'https://steamcommunity.com/openid/login';
 const STEAM_API_KEY = process.env.NEXT_PUBLIC_STEAM_API_KEY || 'your-steam-api-key';
 const RETURN_URL = process.env.NEXT_PUBLIC_RETURN_URL || 'https://hitmanki.store/auth/callback';
 const REALM = process.env.NEXT_PUBLIC_REALM || 'https://hitmanki.store';
-
-export interface SteamUser {
-  steamid: string;
-  personaname: string;
-  avatarfull: string;
-  profileurl: string;
-}
 
 /**
  * Инициирует авторизацию через Steam OpenID
