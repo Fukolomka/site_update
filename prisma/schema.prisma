@@ -1,0 +1,223 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String      @id @default(cuid())
+  steamId       String      @unique
+  username      String
+  avatar        String?
+  email         String?
+  balance       Float       @default(0)
+  role          UserRole    @default(USER)
+  isActive      Boolean     @default(true)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  
+  // Relations
+  inventory     UserInventory[]
+  caseOpenings  CaseOpening[]
+  transactions  Transaction[]
+  withdrawals   Withdrawal[]
+  
+  @@map("users")
+}
+
+model Case {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  image       String
+  price       Float
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  items       CaseItem[]
+  openings    CaseOpening[]
+  
+  @@map("cases")
+}
+
+model Item {
+  id          String     @id @default(cuid())
+  name        String
+  description String?
+  image       String
+  rarity      ItemRarity
+  type        ItemType
+  price       Float
+  isActive    Boolean    @default(true)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  
+  // Relations
+  caseItems   CaseItem[]
+  inventory   UserInventory[]
+  openings    CaseOpening[]
+  
+  @@map("items")
+}
+
+model CaseItem {
+  id        String  @id @default(cuid())
+  caseId    String
+  itemId    String
+  dropRate  Float   // Percentage chance (0-100)
+  
+  // Relations
+  case      Case    @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  item      Item    @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  
+  @@unique([caseId, itemId])
+  @@map("case_items")
+}
+
+model UserInventory {
+  id        String            @id @default(cuid())
+  userId    String
+  itemId    String
+  quantity  Int               @default(1)
+  status    InventoryStatus   @default(OWNED)
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+  
+  // Relations
+  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  item      Item              @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  
+  @@map("user_inventory")
+}
+
+model CaseOpening {
+  id          String   @id @default(cuid())
+  userId      String
+  caseId      String
+  itemId      String
+  cost        Float
+  createdAt   DateTime @default(now())
+  
+  // Relations
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  case        Case     @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  item        Item     @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  
+  @@map("case_openings")
+}
+
+model Transaction {
+  id            String            @id @default(cuid())
+  userId        String
+  type          TransactionType
+  amount        Float
+  status        TransactionStatus @default(PENDING)
+  description   String?
+  paymentMethod String?
+  externalId    String?
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+  
+  // Relations
+  user          User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("transactions")
+}
+
+model Withdrawal {
+  id          String           @id @default(cuid())
+  userId      String
+  itemId      String?
+  amount      Float?
+  method      WithdrawalMethod
+  status      WithdrawalStatus @default(PENDING)
+  tradeUrl    String?
+  description String?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  
+  // Relations
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("withdrawals")
+}
+
+model Settings {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  value       String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("settings")
+}
+
+// Enums
+enum UserRole {
+  USER
+  ADMIN
+  MODERATOR
+}
+
+enum ItemRarity {
+  COMMON
+  UNCOMMON
+  RARE
+  EPIC
+  LEGENDARY
+  MYTHICAL
+}
+
+enum ItemType {
+  WEAPON
+  KNIFE
+  GLOVES
+  STICKER
+  CASE
+  KEY
+}
+
+enum InventoryStatus {
+  OWNED
+  LISTED_FOR_SALE
+  PENDING_WITHDRAWAL
+  WITHDRAWN
+}
+
+enum TransactionType {
+  DEPOSIT
+  WITHDRAWAL
+  CASE_OPENING
+  ITEM_SALE
+  REFUND
+}
+
+enum TransactionStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+enum WithdrawalMethod {
+  STEAM_TRADE
+  SELL_BACK
+  CASH_OUT
+}
+
+enum WithdrawalStatus {
+  PENDING
+  APPROVED
+  SENT
+  COMPLETED
+  REJECTED
+}
