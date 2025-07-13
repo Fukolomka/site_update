@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
-import { verifyToken } from '@/lib/auth';
 import { generateRandomItem, generateAnimationItems } from '@/lib/case-opening';
 
 export async function POST(
@@ -8,19 +7,15 @@ export async function POST(
   { params }: { params: { id: string } }
 ) {
   try {
-    const token = request.cookies.get('token')?.value;
-    if (!token) {
+    // Get Steam ID from request headers
+    const steamId = request.headers.get('X-Steam-ID');
+    if (!steamId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const payload = verifyToken(token);
-    if (!payload) {
-      return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
-    }
-
-    // Get user
+    // Get user by Steam ID
     const user = await prisma.user.findUnique({
-      where: { id: payload.userId },
+      where: { steamId },
     });
 
     if (!user) {

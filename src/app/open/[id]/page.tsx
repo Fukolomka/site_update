@@ -65,6 +65,10 @@ export default function CaseOpeningPage() {
     try {
       const response = await fetch(`/api/cases/${params.id}/open`, {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Steam-ID': user.steamid,
+        },
       });
 
       const data = await response.json();
