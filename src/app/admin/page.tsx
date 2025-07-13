@@ -15,7 +15,8 @@ import {
   DollarSign,
   Activity,
   Shield,
-  FileText
+  FileText,
+  Download
 } from 'lucide-react';
 
 export default function AdminPage() {
@@ -232,11 +233,23 @@ export default function AdminPage() {
             </CardContent>
           </Card>
 
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => router.push('/admin/parse')}>
             <CardContent className="p-6">
               <div className="text-center">
                 <div className="p-3 bg-indigo-100 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-                  <FileText className="w-8 h-8 text-indigo-600" />
+                  <Download className="w-8 h-8 text-indigo-600" />
+                </div>
+                <h3 className="text-lg font-semibold mb-2">Parse Items</h3>
+                <p className="text-gray-600 text-sm">Import items from CS:GO Market</p>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+            <CardContent className="p-6">
+              <div className="text-center">
+                <div className="p-3 bg-red-100 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                  <FileText className="w-8 h-8 text-red-600" />
                 </div>
                 <h3 className="text-lg font-semibold mb-2">Reports</h3>
                 <p className="text-gray-600 text-sm">Generate detailed reports</p>
