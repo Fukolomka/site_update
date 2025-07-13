@@ -36,7 +36,7 @@ export default function HomePage() {
   const fetchUser = async () => {
     try {
       console.log('Fetching user from /api/user');
-      const response = await fetch('/api/user', {
+      const response = await fetch('/api/user?v=' + Date.now(), {
         credentials: 'include',
         cache: 'no-cache',
       });
