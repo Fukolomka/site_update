@@ -30,23 +30,31 @@ export function initiateSteamAuth(): void {
 export async function handleSteamCallback(): Promise<SteamUser | null> {
   const urlParams = new URLSearchParams(window.location.search);
   
+  console.log('Steam callback URL params:', Object.fromEntries(urlParams.entries()));
+  
   // Проверяем, что это успешный ответ от Steam
   if (urlParams.get('openid.mode') !== 'id_res') {
+    console.log('Invalid openid.mode:', urlParams.get('openid.mode'));
     return null;
   }
 
   const identity = urlParams.get('openid.identity');
   if (!identity) {
+    console.log('No openid.identity found');
     return null;
   }
+
+  console.log('Steam identity:', identity);
 
   // Извлекаем Steam ID из identity URL
   const steamIdMatch = identity.match(/\/id\/(\d+)$/);
   if (!steamIdMatch) {
+    console.log('Could not extract Steam ID from identity');
     return null;
   }
 
   const steamId = steamIdMatch[1];
+  console.log('Extracted Steam ID:', steamId);
 
   try {
     // Получаем профиль пользователя из Steam API
