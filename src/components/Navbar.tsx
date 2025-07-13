@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { 
@@ -63,7 +62,7 @@ export function Navbar({ user, onLogin, onLogout }: NavbarProps) {
               <>
                 <div className="flex items-center space-x-2">
                   {user.avatarfull && (
-                    <Image
+                    <img
                       src={user.avatarfull}
                       alt={user.personaname}
                       width={32}
@@ -144,7 +143,7 @@ export function Navbar({ user, onLogin, onLogout }: NavbarProps) {
                 <div className="flex items-center px-5">
                   <div className="flex-shrink-0">
                     {user.avatarfull && (
-                      <Image
+                      <img
                         src={user.avatarfull}
                         alt={user.personaname}
                         width={40}
