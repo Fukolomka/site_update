@@ -48,12 +48,12 @@ export function Navbar({ user, onLogin, onLogout }: NavbarProps) {
                 Inventory
               </Link>
             )}
-            {/* Admin link - можно добавить позже */}
-            {/* {user?.role === 'ADMIN' && (
+            {/* Admin link */}
+            {user && (
               <Link href="/admin" className="hover:text-blue-400 transition-colors">
                 Admin
               </Link>
-            )} */}
+            )}
           </div>
 
           {/* User Section */}
@@ -128,15 +128,15 @@ export function Navbar({ user, onLogin, onLogout }: NavbarProps) {
                   Inventory
                 </Link>
               )}
-              {/* Admin link - можно добавить позже */}
-              {/* {user?.role === 'ADMIN' && (
+              {/* Admin link */}
+              {user && (
                 <Link
                   href="/admin"
                   className="block px-3 py-2 text-base font-medium hover:bg-gray-700 rounded-md"
                 >
                   Admin
                 </Link>
-              )} */}
+              )}
             </div>
             <div className="pt-4 pb-3 border-t border-gray-700">
               {user ? (
